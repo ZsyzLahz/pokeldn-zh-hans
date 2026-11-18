@@ -1,4 +1,4 @@
-name: 打包并发布语言包
+﻿name: 打包并发布语言包
 
 # 只改译文：直接 push 到 master，Actions 会自动打包 .pokeplugin、校验路径安全、
 # 创建（或更新）对应版本的 Release 附件，并把 sha256/size 回写到 pokeldn-source.json。
@@ -18,6 +18,7 @@ on:
 permissions:
   contents: write
 
+# 触发方式：push 或手动 workflow_dispatch
 concurrency:
   group: release
   cancel-in-progress: false
