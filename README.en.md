@@ -28,7 +28,7 @@ Install directly from inside pokeldn — no manual copying:
    ZsyzLahz/pokeldn-zh-hans
    ```
    and press Enter (the source is read from `pokeldn-source.json` at this repo's root).
-3. Back in **Browse**, find **简体中文** (community-zh-hans 1.0.7), press **Install**, acknowledge the risk screen.
+3. Back in **Browse**, find **简体中文** (community-zh-hans 1.0.8), press **Install**, acknowledge the risk screen.
 4. Open **Settings → App language** and select **简体中文** (Simplified Chinese).
 5. Restart pokeldn as prompted.
 
@@ -38,7 +38,7 @@ The UI, mystery gifts and docs will then all be in Chinese.
 
 ### Way 2: Drop the `.pokeplugin`
 
-1. Download `community-zh-hans-1.0.7.pokeplugin` from the [Releases](https://github.com/ZsyzLahz/pokeldn-zh-hans/releases) page.
+1. Download `community-zh-hans-1.0.8.pokeplugin` from the [Releases](https://github.com/ZsyzLahz/pokeldn-zh-hans/releases) page.
 2. Open pokeldn → **Plugins**, drag the file onto **Installed**, or press **Add a plugin** and pick it; acknowledge the risk screen.
 3. Enable the language pack as in Way 1, steps 4–5.
 
@@ -59,19 +59,22 @@ The UI, mystery gifts and docs will then all be in Chinese.
 pokeldn-zh-hans/
 ├── plugin/
 │   ├── plugin.toml      # language-pack metadata (id/name/api/locale)
-│   ├── strings.toml     # UI strings, 1898 entries
-│   ├── messages.toml    # hardcoded in-app English, 587 entries
-│   ├── templates.toml   # templated text, 49 entries
+│   ├── strings.toml     # UI strings, 1949 entries
+│   ├── messages.toml    # hardcoded in-app English, 1245 entries
+│   ├── templates.toml   # templated text, 48 entries
 │   └── docs/            # built-in docs, 48 pages (all in Chinese)
 ├── scripts/
 │   ├── build.py            # merges English strings.en.toml + shards → strings.toml
 │   ├── build_messages.py   # merges msg_*.json → messages.toml
-│   └── verify_docs.py      # validates docs heading levels/links/fences/EN residue
+│   ├── verify_docs.py      # validates docs heading levels/links/fences/EN residue
+│   └── package.ps1         # builds .pokeplugin, refreshes the source manifest and README version
+├── .github/workflows/
+│   └── release.yml      # on push: build, publish the Release, write back hashes
 ├── pokeldn-source.json      # plugin-source manifest (read in-app under Sources for one-click install)
-├── community-zh-hans-1.0.7.pokeplugin  # drag-and-drop install package
-├── community-zh-hans.zip  # ready-made archive, unzip-and-install
 └── README.md
 ```
+
+> `.pokeplugin` files are not tracked in the repo: pushing translations makes GitHub Actions build them and attach them to the Release and the workflow artifacts. Locally, run `pwsh ./scripts/package.ps1` to produce them under `dist/`.
 
 ## Language-pack metadata
 
@@ -80,7 +83,7 @@ pokeldn-zh-hans/
 ```toml
 id = "community-zh-hans"
 name = "简体中文"
-version = "1.0.7"
+version = "1.0.8"
 api = "1.9"
 locale = "zh-Hans"
 strings = "strings.toml"

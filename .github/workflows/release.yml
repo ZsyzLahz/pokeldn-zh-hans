@@ -1,0 +1,77 @@
+name: 打包并发布语言包
+
+# 只改译文：直接 push 到 master，Actions 会自动打包 .pokeplugin、校验路径安全、
+# 创建（或更新）对应版本的 Release 附件，并把 sha256/size 回写到 pokeldn-source.json。
+# 发版前把 plugin/plugin.toml 与 zh-hant/plugin.toml 的 version 改好即可。
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "plugin/**"
+      - "zh-hant/**"
+      - "scripts/**"
+      - "pokeldn-source.json"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 打包并校验
+        shell: pwsh
+        run: ./scripts/package.ps1 -RepoRoot $env:GITHUB_WORKSPACE
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokeplugin
+          path: dist/*.pokeplugin
+          if-no-files-found: error
+
+      - name: 创建或更新 Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = (Get-Content dist/version.txt -Raw).Trim()
+          $tag = "v$version"
+          $assets = @(Get-ChildItem dist -Filter *.pokeplugin | ForEach-Object { $_.FullName })
+          $assets += (Resolve-Path dist/community-zh-hans.zip).Path
+
+          gh release view $tag 2>$null | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release $tag 已存在，覆盖附件"
+            gh release upload $tag @assets --clobber
+            gh release edit $tag --title $tag --notes-file dist/release-notes.md
+          } else {
+            Write-Host "创建 Release $tag"
+            gh release create $tag @assets --title $tag --notes-file dist/release-notes.md
+          }
+
+      - name: 回写插件源校验值
+        shell: pwsh
+        run: |
+          $version = (Get-Content dist/version.txt -Raw).Trim()
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokeldn-source.json README.md README.en.md
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "清单与 README 无变化，跳过提交"
+            exit 0
+          }
+          git commit -m "chore: 同步 v$version 插件源校验值 [skip ci]"
+          git push

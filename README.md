@@ -28,7 +28,7 @@ pokeldn 的语言包通过「社区插件」机制加载，无需修改应用本
    ZsyzLahz/pokeldn-zh-hans
    ```
    并按回车（Sources 会自动读取该仓库根目录的 `pokeldn-source.json`，列出简体与繁体两个包）。
-3. 回到 **Browse** 列表，找到 **简体中文**（community-zh-hans 1.0.7）或 **繁體中文**（community-zh-hant 1.0.7），点 **Install**，确认风险提示。
+3. 回到 **Browse** 列表，找到 **简体中文**（community-zh-hans 1.0.8）或 **繁體中文**（community-zh-hant 1.0.8），点 **Install**，确认风险提示。
 4. 打开 **Settings → App language**，选择对应的 **简体中文** 或 **繁體中文**。
 5. 按提示重启 pokeldn。
 
@@ -38,7 +38,7 @@ pokeldn 的语言包通过「社区插件」机制加载，无需修改应用本
 
 ### 方式二：拖入 `.pokeplugin` 文件
 
-1. 从 [Release 页面](https://github.com/ZsyzLahz/pokeldn-zh-hans/releases) 下载 `community-zh-hans-1.0.7.pokeplugin`（简体）或 `community-zh-hant-1.0.7.pokeplugin`（繁体）。
+1. 从 [Release 页面](https://github.com/ZsyzLahz/pokeldn-zh-hans/releases) 下载 `community-zh-hans-1.0.8.pokeplugin`（简体）或 `community-zh-hant-1.0.8.pokeplugin`（繁体）。
 2. 打开 pokeldn → **Plugins**，把该文件拖到 **Installed** 区，或点 **Add a plugin** 选择它，确认风险提示。
 3. 同方式一共 4-5 步启用语言包。
 
@@ -57,26 +57,28 @@ pokeldn 的语言包通过「社区插件」机制加载，无需修改应用本
 pokeldn-zh-hans/
 ├── plugin/                 # 简体中文语言包（zh-Hans）
 │   ├── plugin.toml      # 语言包元数据（id/name/api/locale）
-│   ├── strings.toml     # 界面文案，1898 条
-│   ├── messages.toml    # 模块内写死的英文文案，587 条
-│   ├── templates.toml   # 带变量文案模板，49 条
+│   ├── strings.toml     # 界面文案，1949 条
+│   ├── messages.toml    # 模块内写死的英文文案，1245 条
+│   ├── templates.toml   # 带变量文案模板，48 条
 │   └── docs/            # 内置文档，48 篇（全中文）
 ├── zh-hant/                # 繁體中文语言包（zh-Hant）
 │   ├── plugin.toml      # id=community-zh-hant, locale=zh-Hant
-│   ├── strings.toml     # 界面文案，1898 条（繁体）
-│   ├── messages.toml    # 模块内写死的英文文案，587 条（繁体）
-│   ├── templates.toml   # 带变量文案模板，49 条（繁体）
+│   ├── strings.toml     # 界面文案，1949 条（繁体）
+│   ├── messages.toml    # 模块内写死的英文文案，1245 条（繁体）
+│   ├── templates.toml   # 带变量文案模板，48 条（繁体）
 │   └── docs/            # 内置文档，48 篇（繁体）
 ├── scripts/
 │   ├── build.py            # 由英文 strings.en.toml + 分片合并生成 strings.toml
 │   ├── build_messages.py   # 合并 msg_*.json 生成 messages.toml
-│   └── verify_docs.py      # 校验 docs 标题层级/链接/围栏/英文残留
-├── pokeldn-source.json   # 插件源清单（简繁两个条目，软件内 Sources 自动读取）
-├── community-zh-hans-1.0.7.pokeplugin   # 简体插件包（拖入即装）
-├── community-zh-hant-1.0.7.pokeplugin   # 繁体插件包（拖入即装）
-├── community-zh-hans.zip  # 简体现成打包
+│   ├── verify_docs.py      # 校验 docs 标题层级/链接/围栏/英文残留
+│   └── package.ps1         # 打包 .pokeplugin，更新插件源清单与 README 版本号
+├── .github/workflows/
+│   └── release.yml      # push 后自动打包、发布 Release 并回写校验值
+├── pokeldn-source.json  # 插件源清单（简繁两个条目，软件内 Sources 自动读取）
 └── README.md
 ```
+
+> `.pokeplugin` 不在仓库里跟踪：push 译文后由 GitHub Actions 自动打包，产物在 Release 页面与构建 Artifacts 中；本地可用 `pwsh ./scripts/package.ps1` 生成到 `dist/`。
 
 ## 语言包元数据
 
@@ -85,7 +87,7 @@ pokeldn-zh-hans/
 ```toml
 id = "community-zh-hans"
 name = "简体中文"
-version = "1.0.7"
+version = "1.0.8"
 api = "1.9"
 locale = "zh-Hans"
 strings = "strings.toml"
